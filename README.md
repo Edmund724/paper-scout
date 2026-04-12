@@ -27,7 +27,7 @@ The repository is not required after installation.
 ## Repository Contents
 
 - `SETUP.md` — installation guide (read this to install)
-- `AGENTS_template.md` — template for the workspace instruction file
-- `prompt_template.md` — template for the thin run trigger
+- `AGENTS_TEMPLATE.md` — template for the workspace instruction file
+- `PROMPT_TEMPLATE.md` — template for the thin run trigger
 - `skill/SKILL.md` — the paper-scouting skill
 - `AGENTS.md` — repository contract for agents maintaining this codebase

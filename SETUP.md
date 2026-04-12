@@ -46,7 +46,7 @@ The workspace instruction file should read as a clean, permanent operating contr
 Follow these steps in order:
 
 1. Read this file fully before making changes.
-2. Clone or fetch the repository so the other files are accessible. If you are reading this file from a URL, you need access to `AGENTS_template.md`, `prompt_template.md`, and `skill/SKILL.md` from the same repository.
+2. Clone or fetch the repository so the other files are accessible. If you are reading this file from a URL, you need access to `AGENTS_TEMPLATE.md`, `PROMPT_TEMPLATE.md`, and `skill/SKILL.md` from the same repository.
 3. Verify the required tools and actual access:
    - `hf` is installed (`uv tool install huggingface_hub`)
    - `hf papers` works
@@ -55,12 +55,12 @@ Follow these steps in order:
    - Feishu destination access can be validated
 4. Ask the user the onboarding questions in the next section.
 5. Create `~/.paper-scout/workspace/` if needed.
-6. Generate the workspace instruction file from `AGENTS_template.md`, using the harness-appropriate filename when practical:
+6. Generate the workspace instruction file from `AGENTS_TEMPLATE.md`, using the harness-appropriate filename when practical:
    - Codex: `AGENTS.md`
    - Claude: `CLAUDE.md`
    - Gemini: `GEMINI.md`
    - Kimi: `AGENTS.md`
-7. Generate a thin `~/.paper-scout/prompt.md` from `prompt_template.md`.
+7. Generate a thin `~/.paper-scout/prompt.md` from `PROMPT_TEMPLATE.md`.
 8. Install `skill/SKILL.md` into the user's harness, typically under a skill directory named `paper-scout`.
 9. Optionally install a scheduled task if the user wants automation.
 
@@ -215,7 +215,7 @@ If the user does not request a different location, use this default.
 
 The persistent runtime contract should be installed into the Paper Scout workspace as the harness-appropriate always-loaded instruction file.
 
-When generating the workspace instruction file from `AGENTS_template.md`, remember: the agent reading this file later will treat every line as a standing operating instruction. Generate it as a clean contract, not a record of this conversation.
+When generating the workspace instruction file from `AGENTS_TEMPLATE.md`, remember: the agent reading this file later will treat every line as a standing operating instruction. Generate it as a clean contract, not a record of this conversation.
 
 The generated file should carry:
 

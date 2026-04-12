@@ -15,8 +15,8 @@ What the repo contains:
 
 - `README.md` — the project entry point for humans and AI agents landing here
 - `SETUP.md` — the installation guide, read by a setup agent during installation
-- `AGENTS_template.md` — the workspace instruction template, rendered into the user's persistent runtime contract
-- `prompt_template.md` — the thin run-trigger template, rendered into a lightweight prompt
+- `AGENTS_TEMPLATE.md` — the workspace instruction template, rendered into the user's persistent runtime contract
+- `PROMPT_TEMPLATE.md` — the thin run-trigger template, rendered into a lightweight prompt
 - `skill/SKILL.md` — the runtime method, installed as a skill into the user's agent harness
 
 What the repo produces after installation:
@@ -58,7 +58,7 @@ The setup agent:
 - operates from wherever the user invoked it — a terminal, a chat, a random directory
 - has no access to the workspace until it creates one
 - reads `SETUP.md` as its primary instruction source
-- reads `AGENTS_template.md` and `prompt_template.md` as source material for generating files
+- reads `AGENTS_TEMPLATE.md` and `PROMPT_TEMPLATE.md` as source material for generating files
 - produces the installed workspace, the thin prompt, and the skill installation
 - is done when the user has a working setup
 
@@ -131,14 +131,14 @@ Common failure modes to watch for:
 - **Too many questions.** The user said "install this for me", not "let me fill out a form." If the setup guide presents a long field list without emphasizing defaults, the setup agent will ask for every field. Group questions by necessity: what must be asked, what has good defaults, what can be deferred.
 - **Unclear sequencing.** The setup agent needs to verify tools before asking preferences, and ask preferences before generating files. If the guide presents these in the wrong order or mixes them, the setup agent may verify tools after generating files, or ask the user questions it could have inferred.
 - **Missing error recovery.** If `hf papers` does not work, the setup agent needs to know what to do. If the guide only says "verify hf papers works" without explaining how to handle failure, different setup agents will handle it differently — some will try to fix it, some will silently skip, some will dump a traceback at the user.
-- **Assuming the setup agent has repo access.** The setup agent may be reading `SETUP.md` from a URL. It may not have the repo cloned. If setup requires reading `AGENTS_template.md` or `skill/SKILL.md`, the guide should make clear how to access them — whether by cloning, fetching raw URLs, or other means.
+- **Assuming the setup agent has repo access.** The setup agent may be reading `SETUP.md` from a URL. It may not have the repo cloned. If setup requires reading `AGENTS_TEMPLATE.md` or `skill/SKILL.md`, the guide should make clear how to access them — whether by cloning, fetching raw URLs, or other means.
 - **Polluting the workspace instruction file.** The setup agent must not leave setup artifacts in the file it generates for the future running agent. `SETUP.md` should explicitly warn against this. See the "Your Role" section in that file.
 
 ## Thinking From the Reading Agent's Perspective
 
 The reading agent operates from `~/.paper-scout/workspace/` and interprets the installed files as behavioral instructions. It has never seen this repository. It does not know how it was set up. Its entire world is the workspace instruction file, the skill, and the prompt.
 
-When editing `AGENTS_template.md`, `skill/SKILL.md`, or `prompt_template.md`, ask:
+When editing `AGENTS_TEMPLATE.md`, `skill/SKILL.md`, or `PROMPT_TEMPLATE.md`, ask:
 
 **How will a reading agent interpret this instruction, and what will it actually do?**
 
@@ -181,7 +181,7 @@ Each file in this repo has a distinct job. Do not let them bleed into each other
 - Editing principle: if a change affects how the setup conversation goes, it belongs here.
 - Remember: setup agents often read this from a GitHub URL without cloning the repo. It must be self-contained enough to drive the setup flow, while pointing to the other files when the setup agent needs to read them. It must also clearly warn the setup agent not to leave installation artifacts in the workspace instruction file it generates.
 
-**`AGENTS_template.md`** is the workspace instruction template.
+**`AGENTS_TEMPLATE.md`** is the workspace instruction template.
 
 - Audience: **reading agents**, after the setup agent fills the template and installs it.
 - Contains: identity, user preferences, policies, delivery destination, workspace rules, run directive.
@@ -197,7 +197,7 @@ Each file in this repo has a distinct job. Do not let them bleed into each other
 - Editing principle: if a change affects how the scouting method works regardless of which user is running it, it belongs here.
 - Remember: this is the one file shared identically across all installations. It must not assume any particular user's interests or configuration.
 
-**`prompt_template.md`** is the run-trigger template.
+**`PROMPT_TEMPLATE.md`** is the run-trigger template.
 
 - Audience: **reading agents**, at the start of each run.
 - Contains: date, workspace path, focus scope, cadence — just enough to start a run.
