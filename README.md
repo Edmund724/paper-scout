@@ -1,33 +1,27 @@
 # Paper Scout
 
-Paper Scout is an agent-native paper scouting workflow. It discovers recent papers on Hugging Face, filters hard, investigates the most promising ones, and delivers a fresh Feishu doc for each run.
+A living collection of paper deep dives. Paper Scout is an agent-native workflow that scouts recent papers (default source: Hugging Face), filters hard, investigates the most promising ones deeply, and delivers a fresh Feishu brief for each run. The record accumulates here as runs happen.
 
-This repository installs a reusable agent behavior. There is no code to run. The output is a configured workspace and an installed skill that an AI agent uses on a schedule.
+There is no code to build and nothing to install. The repository *is* the instance. What it ships is **prompts** — instruction files and skills that are easy to read and tune.
 
-## Installation
+## How a Run Works
 
-**If you are a human,** tell your AI agent:
+1. `scout.sh` starts the reading agent from `workspace/` with a date-stamped `prompt.txt`.
+2. The agent reads `workspace/AGENTS.md` (its contract) and follows the `paper-scout` skill: scout the recent pool, filter aggressively, deep-dive a small handful, write the brief, deliver a fresh Feishu doc.
+3. The analysis is saved under `workspace/runs/` and the run is logged to `workspace/runs/INDEX.md`. The delivered brief is archived to `reports/`.
 
-> Read https://github.com/Mtrya/paper-scout/blob/main/SETUP.md and install Paper Scout for me.
+## Layout
 
-**If you are an AI agent,** read `SETUP.md` in this repository. That file is your complete installation guide. Do not start the installation from this README.
+- `prompt.txt` — the run trigger
+- `scout.sh` — launches a run
+- `workspace/AGENTS.md` — the reading agent's contract (your interests, cadence, Feishu destination)
+- `workspace/.agents/skills/` — the scouting, deep-dive, and Feishu-doc skills
+- `workspace/runs/` — deep-dive notes and `INDEX.md` (the readable record)
+- `reports/` — delivered briefs archived as DocxXML, one per run
+- `AGENTS.md` — contract for coding agents maintaining this repo
 
-## What Gets Installed
+`workspace/{papers,repos,drafts}/` hold transient run data and are gitignored.
 
-After setup:
+## Make It Your Own
 
-- `~/.paper-scout/workspace/` — the agent's working directory
-- `~/.paper-scout/workspace/AGENTS.md` (or harness equivalent) — the persistent runtime contract
-- `~/.paper-scout/prompt.md` — a thin run trigger
-- An installed `paper-scout` skill in the agent harness
-- Optionally, a scheduled task for automated runs
-
-The repository is not required after installation.
-
-## Repository Contents
-
-- `SETUP.md` — installation guide (read this to install)
-- `AGENTS_TEMPLATE.md` — template for the workspace instruction file
-- `PROMPT_TEMPLATE.md` — template for the thin run trigger
-- `skill/SKILL.md` — the paper-scouting skill
-- `AGENTS.md` — repository contract for agents maintaining this codebase
+Want your own tracker? Clone this, then tell your agent something like: "read this repo and configure a paper tracker for me in the same spirit, tailored to my interests." The agent edits `workspace/AGENTS.md` (interests, exclusions, cadence, Feishu destination) and tunes the skills as needed. No setup script required — it's all prompts.
