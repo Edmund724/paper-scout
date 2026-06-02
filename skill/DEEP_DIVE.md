@@ -10,6 +10,8 @@ This skill governs the deep investigation phase for a single paper. It is invoke
 
 The goal is not to summarize the paper. The goal is to understand it well enough to write a genuinely useful analysis: what it actually claims, whether those claims hold up, what it reveals about the state of the field, and whether it changes what the user should read, build, or think about.
 
+Loading the paper into context is only the **first** step. A deep dive that restates the abstract and method at a high level is a failure, even if well written. Genuine understanding here means reconstructing the method at near-reimplementation detail, interrogating the evidence rather than transcribing it, and — whenever code exists — reading the actual implementation. **The code matters more than the prose: it is the ground truth for what the paper actually does.**
+
 ---
 
 ## Input
@@ -28,10 +30,10 @@ Structured analysis notes saved to `runs/<paper-id>-deep-dive.md`, covering:
 
 - what the paper is actually doing
 - what is genuinely novel
-- the core method and how it works
+- the core method and how it works, at enough detail that a reader could approximately reimplement it
 - the experimental evidence and how credible it is
+- **what the code reveals** — whether the implementation matches the paper, undocumented tricks or defaults, and any paper-vs-code discrepancies (or an explicit note that no code was found)
 - red flags, caveats, and open questions
-- what linked artifacts reveal about maturity and practicality
 - a bottom-line judgment: why this paper was worth the deep dive
 
 These notes feed directly into Phase 5 synthesis. They do not need to be polished prose — they need to be accurate and specific.
@@ -133,31 +135,33 @@ Write the method section densely and specifically. Do not replace technical cont
 
 ---
 
-## Phase D4: Artifact Inspection (When Applicable)
+## Phase D4: Code And Artifact Inspection (Mandatory When Code Exists)
 
-Inspect linked project pages, GitHub repos, model cards, or dataset cards when the paper looks especially important or when the artifacts are directly relevant to judging the work.
+These papers were selected *because* they are promising, so artifact inspection is not optional triage — it is a required part of every deep dive.
 
-**For GitHub repos:**
+**Code inspection is mandatory whenever a repository is present.** Do not rely on the paper's prose description of its own method; read what the implementation actually does. If you cannot find any code, state that explicitly in the notes and explain how it affects your confidence.
 
-1. Check whether the repo exists and is not empty.
+**For GitHub repos — always clone and read the implementation:**
+
+1. Clone the repo (`git clone`) into `repos/<paper-id>/` and inspect it locally. Repo size is rarely a reason to skip — clone shallowly (`--depth 1`) if it is large, and only fall back to browsing on the web if cloning genuinely fails.
 2. Read the README for setup instructions and claimed functionality.
-3. Check the last commit date and activity level.
-4. Look at the core implementation file(s) — do they match the paper's description?
-5. Note any significant discrepancies between the paper and the code.
-
-Do not clone large repos for minor papers. Clone only when the code inspection is likely to change your assessment.
+3. Open the core implementation file(s) and trace the method end to end: does the code actually compute what the paper describes? Locate the key equation, loss term, or algorithm in the source.
+4. Look for what the paper does **not** say: undocumented tricks, default hyperparameters, clamps/normalizations, data filtering, baseline implementations, and anything that would change how you read the results.
+5. Note every significant discrepancy between the paper and the code, and check the last commit date / activity as a maturity signal.
+6. Where it is cheap and decisive, run a **lightweight** check — a small script, a CPU-only sanity run, or a tiny snippet — to confirm or challenge a specific claim. Stay within the lightweight-execution limits (no training, no full benchmarks, no heavy downloads). Report exactly what you ran and what it showed.
 
 **For model and dataset cards on Hugging Face:**
 
 - Check download numbers and community activity as a proxy for real-world uptake.
 - Check whether the card accurately describes what the paper claims.
+- Inspect a small sample of any released dataset where it would sharpen the analysis.
 - Note any limitations or warnings that the paper does not mention.
 
 **What to look for:**
-- Does the implementation match the described method?
+- Does the implementation match the described method, exactly or only loosely?
 - Is the code usable by someone other than the authors?
-- Are there signs of rushed or incomplete release?
-- Does the repo reveal practical limitations not mentioned in the paper?
+- Are there signs of a rushed or incomplete release?
+- Does the repo reveal practical limitations or hidden assumptions not mentioned in the paper?
 
 ---
 
@@ -181,7 +185,8 @@ Write a bottom-line assessment covering:
 - Do not treat the abstract as a reliable guide to what the paper actually does. Check whether the paper delivers what the abstract promises.
 - Do not stop at the method section. Experiments and ablations are where claims get tested.
 - Do not skip the appendix. Important implementation details, full hyperparameter tables, and additional experiments often live there.
-- Do not let artifact inspection become a detour. If the repo confirms what the paper says and adds nothing new, note that briefly and move on.
+- Do not skip code inspection when a repo exists, and do not substitute the paper's description of the code for actually reading it. If the code confirms the paper and adds nothing new, say so briefly — but only after you have looked.
+- Do not let code inspection turn into a reproduction project. Read the implementation and run only the smallest checks that change your assessment; stay within the lightweight-execution limits.
 
 ---
 
@@ -189,9 +194,10 @@ Write a bottom-line assessment covering:
 
 - [ ] Section inventory completed — no sections unaccounted for
 - [ ] Motivation and contribution clearly stated in the paper's own terms
-- [ ] Core method explained specifically, not vaguely summarized
+- [ ] Core method explained at near-reimplementation detail, not vaguely summarized
 - [ ] Experimental evidence assessed, not just transcribed
+- [ ] Code cloned and inspected when a repo exists (or absence of code stated explicitly); paper-vs-code discrepancies noted
+- [ ] Any lightweight verification run is reported with what it showed
 - [ ] Red flags noted where present; absence of red flags noted where absent
-- [ ] Artifact inspection done if expected value was high
 - [ ] Bottom-line assessment written with a specific priority judgment
 - [ ] Notes saved to `runs/<paper-id>-deep-dive.md`
