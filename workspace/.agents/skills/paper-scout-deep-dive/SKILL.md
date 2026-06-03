@@ -26,13 +26,14 @@ A paper already identified for deep investigation, with:
 
 ## Output
 
-Structured analysis notes saved to `runs/<paper-id>-deep-dive.md`, covering:
+Structured analysis notes saved to `runs/<area>/<title-slug>-<id>-deep-dive.md`, covering:
 
 - what the paper is actually doing
 - what is genuinely novel
 - the core method and how it works, at enough detail that a reader could approximately reimplement it
 - the experimental evidence and how credible it is
 - **what the code reveals** — whether the implementation matches the paper, undocumented tricks or defaults, and any paper-vs-code discrepancies (or an explicit note that no code was found)
+- the comparative positioning against 1–3 key related or prior papers (mandatory when no code exists) — what is genuinely new versus the closest prior art
 - red flags, caveats, and open questions
 - a bottom-line judgment: why this paper was worth the deep dive
 
@@ -44,7 +45,7 @@ These notes feed directly into Phase 5 synthesis. They do not need to be polishe
 
 Before analyzing:
 
-1. Download the paper markdown: `hf papers read <id> > papers/<id>.md`
+1. Download the paper markdown into its area: `hf papers read <id> > papers/<area>/<title-slug>-<id>.md`
 2. Read the full paper. Do not skip sections.
 3. Before starting the analysis, build a **section inventory**: list every section and subsection, note its core content in one sentence, and record where it will appear in your analysis notes. This prevents important content from being silently dropped.
 
@@ -143,7 +144,7 @@ These papers were selected *because* they are promising, so artifact inspection 
 
 **For GitHub repos — always clone and read the implementation:**
 
-1. Clone the repo (`git clone`) into `repos/<paper-id>/` and inspect it locally. Repo size is rarely a reason to skip — clone shallowly (`--depth 1`) if it is large, and only fall back to browsing on the web if cloning genuinely fails.
+1. Clone the repo (`git clone`) into `repos/<area>/<repo-name>/` (same area as the paper) and inspect it locally. Repo size is rarely a reason to skip — clone shallowly (`--depth 1`) if it is large, and only fall back to browsing on the web if cloning genuinely fails.
 2. Read the README for setup instructions and claimed functionality.
 3. Open the core implementation file(s) and trace the method end to end: does the code actually compute what the paper describes? Locate the key equation, loss term, or algorithm in the source.
 4. Look for what the paper does **not** say: undocumented tricks, default hyperparameters, clamps/normalizations, data filtering, baseline implementations, and anything that would change how you read the results.
@@ -162,6 +163,20 @@ These papers were selected *because* they are promising, so artifact inspection 
 - Is the code usable by someone other than the authors?
 - Are there signs of a rushed or incomplete release?
 - Does the repo reveal practical limitations or hidden assumptions not mentioned in the paper?
+
+---
+
+## Phase D-RW: Situate Against Related Work
+
+A deep dive must reason about the paper against something, not just restate it. Code is one anchor; related work is the other.
+
+**This phase is mandatory when the paper ships no usable code**, and encouraged otherwise. With no implementation to inspect, comparative positioning is the main thing that turns a deep dive into analysis rather than a polished summary.
+
+1. Identify the 1–3 most load-bearing related papers: the baselines this work compares against, the method it most directly improves on, or the closest competing approach. Use the paper's own citations and the area bank (`papers/<area>/`) first.
+2. Pull any that are not already local into `papers/<area>/` (reuse the same area). Read each at scan depth — abstract, method, headline results — not a full deep dive.
+3. Reason comparatively and record it in the notes: what is genuinely new here versus the closest prior art; whether the claimed improvement holds against what the baseline would actually do, or the comparison is set up favorably; and what the paper omits about its own lineage or the limitations its predecessors already hit.
+
+Keep this bounded — 1–3 papers, read at scan depth, within the lightweight-investigation budget. The point is comparison, not a literature review. Newly pulled papers enrich the area bank for future runs.
 
 ---
 
@@ -197,7 +212,8 @@ Write a bottom-line assessment covering:
 - [ ] Core method explained at near-reimplementation detail, not vaguely summarized
 - [ ] Experimental evidence assessed, not just transcribed
 - [ ] Code cloned and inspected when a repo exists (or absence of code stated explicitly); paper-vs-code discrepancies noted
+- [ ] Situated against 1–3 key related papers (mandatory when no code exists); comparative reasoning recorded
 - [ ] Any lightweight verification run is reported with what it showed
 - [ ] Red flags noted where present; absence of red flags noted where absent
 - [ ] Bottom-line assessment written with a specific priority judgment
-- [ ] Notes saved to `runs/<paper-id>-deep-dive.md`
+- [ ] Notes saved to `runs/<area>/<title-slug>-<id>-deep-dive.md`

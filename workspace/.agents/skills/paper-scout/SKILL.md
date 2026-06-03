@@ -29,7 +29,7 @@ This skill defaults to Hugging Face papers via `hf papers`, but it may be used w
 
 Before source discovery, load `hf-cli`.
 
-Before creating Feishu docs, load `lark-doc`.
+Before creating Feishu docs, load `lark-doc`. Before notifying the user of the delivered doc, load `lark-im`.
 
 During Phase 4 (deep investigation), load and follow `paper-scout-deep-dive`.
 
@@ -65,28 +65,39 @@ Prefer accurate judgment, clear rationale, and honest uncertainty over false con
 
 ## Workspace Contract
 
-Default workspace root:
-
-`~/.paper-scout/workspace/`
-
-Recommended structure:
+The workspace root is the reading agent's home directory; the agent runs from here, and every path below is relative to it.
 
 ```text
-workspace/
-├── papers/
-├── repos/
+.
+├── papers/<area>/<title-slug>-<id>.md          # downloaded paper markdown bank
+├── repos/<area>/<repo-name>/                    # cloned repos for code inspection
 ├── runs/
-│   └── INDEX.md
-└── drafts/
+│   ├── INDEX.md                                 # compact dedup/coverage log
+│   └── <area>/<title-slug>-<id>-deep-dive.md    # durable analysis notes
+└── drafts/                                      # freeform scratch + working DocxXML
 ```
+
+### Areas
+
+`papers/`, `repos/`, and `runs/` are organized into free-form, evolving research-area folders (kebab-case, e.g. `vla/`, `world-models/`, `spatial-intelligence/`). Areas are not a fixed taxonomy and not date partitions. Create an area when a theme recurs; put each paper in exactly one area; fold a thin one-stray-paper area into a broader one rather than creating a singleton. Reuse the same area name across `papers/`, `repos/`, and `runs/` so a paper's markdown, its repo, and its notes all live under matching areas. Co-locating related work this way is deliberate — it makes the cross-paper reasoning in `paper-scout-deep-dive` cheap.
+
+### Naming
+
+Lead filenames with a human-readable slug from the paper title or repo name so the bank is browsable, and keep the arXiv/HF id as a trailing suffix (dedup keys on the id):
+
+- `papers/vla/robosemanticbench-2606.02277.md`
+- `repos/spatial-intelligence/TVRBench/` (actual upstream repo name; add an id suffix only on collision)
+- `runs/vla/robosemanticbench-2606.02277-deep-dive.md`
 
 ### Directory Roles
 
-- `papers/`: downloaded paper markdown and related lightweight paper artifacts
-- `repos/`: cloned repositories for code inspection
-- `runs/`: per-run notes, scratch analysis, and temporary structured artifacts
-- `drafts/`: working Lark DocxXML before delivery
-- `runs/INDEX.md`: the persistent coverage log and dedup source of truth
+- `papers/`: downloaded paper markdown, organized by area
+- `repos/`: cloned repositories for code inspection, organized by area
+- `runs/`: durable per-run analysis notes (by area) plus `INDEX.md`
+- `runs/INDEX.md`: the persistent, compact coverage log and dedup source of truth
+- `drafts/`: freeform scratch and working Lark DocxXML; overwrite freely, nothing here is durable. The final delivered DocxXML is archived to `../reports/`.
+
+The bank is living — kept to a working size as runs accumulate. How to prune it is governed by a separate skill (not yet written); do not invent pruning rules here.
 
 ## State Rules
 
@@ -126,10 +137,10 @@ If the workspace instructions or current run trigger explicitly expand permissio
 Before scouting:
 
 1. Load `hf-cli`.
-2. Confirm the workspace root exists or can be created.
+2. Confirm the directory layout (`papers/`, `repos/`, `runs/`, `drafts/`) exists, and create whatever is missing.
 3. Inspect `runs/INDEX.md` if present.
 4. Verify the output and scratch directories are available.
-5. Before delivery work later in the run, remember to load `lark-doc`.
+5. Before delivery work later in the run, remember to load `lark-doc` and `lark-im`.
 
 If source access or delivery readiness is broken, stop early and explain the blocker.
 
@@ -145,7 +156,7 @@ Gather a broad recent pool and preserve enough metadata to support later selecti
 - abstract or summary snippet
 - links to project pages, repos, model cards, or dataset cards when available
 
-The initial pool can be large. Do not investigate each item deeply.
+The initial pool can be large. Do not investigate each item deeply. If you persist the candidate pool to disk, write it to `drafts/` (it is scratch and may be overwritten) — never to `runs/`, which holds only durable notes.
 
 ## Phase 2: Fast Scan
 
@@ -200,9 +211,10 @@ A light summary of what the skill covers:
 - **Work through the full paper.** Do not stop at the method section. Experiments, ablations, and appendices contain the evidence that tests the claims.
 - **Write specific analysis notes.** The goal is not to summarize. It is to understand the paper well enough to write a genuinely useful brief section.
 - **Inspect artifacts selectively.** Repos, model cards, and project pages add value when the paper is genuinely promising. Do not let artifact inspection become a detour.
+- **Situate against related work.** Especially when a paper ships no code, pull in 1–3 key related or prior papers and reason comparatively. This is what turns a code-less deep dive into analysis rather than a polished summary.
 - **Write a bottom-line judgment.** Is it worth the user's time? Should they track follow-up work? Be direct.
 
-Save analysis notes for each paper to `runs/<paper-id>-deep-dive.md`. These notes feed Phase 5 directly.
+Save analysis notes for each paper to `runs/<area>/<title-slug>-<id>-deep-dive.md`. These notes feed Phase 5 directly.
 
 Do not let deep investigation turn into a full reproduction effort.
 
@@ -215,22 +227,24 @@ That skill defines the document structure, visual hierarchy, formatting conventi
 A light summary of what the skill covers:
 
 - **Open with a synthesis.** The user should understand what mattered this period before reading individual papers.
-- **Use a shortlist table** for all shortlisted papers, with specific contribution and relevance columns.
-- **Write structured H2 sections** for each deep-dived paper: what it does, how it works, the evidence, and a judgment.
-- **Use rich formatting.** Tables, callouts (blockquotes), and horizontal rules make the brief navigable. Avoid flat bullet lists for everything.
+- **Cover each paper exactly once.** Deep-dived papers are their own narrative sections; lightly-noticed papers appear only as rows in a per-theme shortlist table. No paper is both a table row and a section, so there are no "see deep dive" pointers.
+- **Write each deep dive as fluent narrative.** No fixed section template — each paper is flowing prose at the depth it warrants, still carrying the mechanism, evidence, code/related-work findings, and a clear verdict, but woven together rather than slotted into identical sub-headers.
+- **Use rich formatting where it earns its place.** Tables, callouts, latex, and horizontal rules where they aid the reader; not as decoration on every paper.
 - **Be specific, not promotional.** Every claim should be grounded in what the paper actually says or what the analysis found.
 
 Writing tone and depth are controlled by the workspace instructions or current run trigger. The reasoning standard should remain high regardless of style choice.
 
 ## Phase 6: Delivery
 
-Before delivery, load `lark-doc`.
+Before delivery, load `lark-doc` and `lark-im`.
 
-Write the brief as Lark DocxXML into `drafts/` first. After successful delivery, archive the delivered DocxXML to the repo-root `reports/` as `YYYY-MM-DD-<slug>.docxxml`.
+Write the brief as Lark DocxXML into `drafts/` first.
 
-Then create a fresh Feishu doc in the configured destination for this run. The destination is expected to be a folder or wiki space rather than an existing doc to update.
+Create the Feishu doc **as the bot** with `lark-cli docs +create --api-version v2` — the bot owns the doc. There is no configured folder/wiki destination and no `--parent-token`. Capture the resulting document URL.
 
-Preserve the resulting document URL or identifier for logging.
+Then **send the user a direct message** with the doc link using `lark-cli im +messages-send`. Load `lark-im` for how to address and send to the user, and resolve the recipient from the identity `lark-cli` exposes. Delivery is complete only once the DM is sent and confirmed. If you cannot determine a recipient or the send fails, stop and report the blocker rather than finishing silently.
+
+After the DM is confirmed, archive the delivered DocxXML to `../reports/` as `YYYY-MM-DD-<slug>.docxxml`, and preserve the document URL for logging.
 
 ## Phase 7: Logging And Optional Cleanup
 
@@ -248,13 +262,7 @@ Each run entry should record:
 
 The log should be written newest first when convenient for readability.
 
-After logging, optionally perform a light cleanup if clearly safe:
-
-- prune stale scratch files in `runs/`
-- prune old downloaded paper markdown if it is no longer useful
-- prune old cloned repos if they are large and clearly stale
-
-Do not delete recent or obviously useful material without a good reason.
+The bank (`papers/`, `repos/`) is living and meant to stay a working size, but how to prune it is governed by a separate skill that is not yet written. Do not invent pruning rules here. Scratch never accumulates in `runs/`: intermediate artifacts live in `drafts/` and are overwritten run to run.
 
 ## Final Checklist
 
@@ -265,8 +273,8 @@ Before finishing a run, confirm:
 - previously deep-dived papers were not repeated
 - the shortlist was filtered aggressively rather than padded
 - deep investigation stayed read-only and lightweight
-- the final brief reflects both broad scouting and deeper analysis
-- a fresh Feishu doc was created
+- the final brief reflects both broad scouting and deeper analysis, with each paper appearing exactly once (no table-plus-section duplication)
+- the doc was created as the bot and its link was delivered to the user by direct message
 - `runs/INDEX.md` was updated
 
 If any of these failed, say so clearly instead of implying the run was complete.

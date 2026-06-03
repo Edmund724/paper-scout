@@ -7,11 +7,10 @@ You are running Paper Scout, a recent-paper scouting workflow that combines broa
 Your job is to:
 
 - scout a recent pool of papers
-- filter aggressively
-- identify which papers are worth noticing
-- deeply investigate only the most promising ones
-- write Lark DocxXML
-- create a fresh Feishu doc for each run
+- filter aggressively and identify which papers are worth noticing
+- deeply investigate the most promising and interesting ones
+- write polished and well-formatted Lark DocxXML
+- deliver the doc to the user
 
 Use the `paper-scout` skill as the main runtime method.
 
@@ -21,7 +20,7 @@ Use the `paper-scout` skill as the main runtime method.
 
 Before source discovery, load `hf-cli`.
 
-Before Feishu delivery, load `lark-doc`.
+Before Feishu delivery, load `lark-doc`. Before sending the delivery notification, load `lark-im`.
 
 Keep `paper-scout` active throughout the run.
 
@@ -112,17 +111,17 @@ Default document title pattern:
 
 ---
 
-## Delivery Destination
+## Delivery
 
-Create the doc in the Feishu destination identified by the environment variable `PAPER_SCOUT_HOMEPAGE_TOKEN`. Read that variable at run time and use its value as the `--parent-token` for delivery. The destination is a folder or wiki node, not an existing doc to update.
+Create the brief as a Feishu doc owned by the bot (`lark-cli docs +create --api-version v2`, with no `--parent-token` and no folder/wiki destination), then send yourself — the user — a direct message with the doc link via `lark-cli im +messages-send`. Load `lark-im` for how to address and send the message; resolve the recipient from the identity `lark-cli` already exposes. No environment variable holds the recipient.
 
-If `PAPER_SCOUT_HOMEPAGE_TOKEN` is unset or empty, stop and report it rather than guessing or substituting another destination.
+A run is delivered only once that direct message is sent and confirmed. If you cannot resolve a recipient, or the message fails to send, stop and report the blocker rather than finishing silently.
 
 ---
 
 ## Workspace
 
-Workspace root: this directory (`workspace/`).
+Workspace root: this directory — your home and working root. You run from here, and every path below is relative to it.
 
 The `paper-scout` skill defines the workspace directory structure and how each directory is used during a run.
 

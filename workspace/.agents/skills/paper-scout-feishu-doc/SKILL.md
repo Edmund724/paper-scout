@@ -14,7 +14,7 @@ This skill owns the **brief's structure and editorial standards** — which sect
 
 ## Before You Start
 
-Load `lark-doc` before any writing or delivery work, and follow its references (`lark-doc-xml.md` for syntax, `lark-doc-create.md` / `lark-doc-update.md` for commands, `lark-doc-style.md` for visual richness).
+Load `lark-doc` before any writing or delivery work, and follow its references (`lark-doc-xml.md` for syntax, `lark-doc-create.md` / `lark-doc-update.md` for commands, `lark-doc-style.md` for visual richness). Load `lark-im` before the delivery notification — the brief is delivered to the user by direct message, not filed into a folder.
 
 The current `lark-doc` skill uses the **v2 API with DocxXML** as the default content format. All `docs +create`, `docs +fetch`, and `docs +update` commands must carry `--api-version v2`. Author the brief as DocxXML.
 
@@ -56,7 +56,7 @@ If the period was weak, say so in plain prose. Do not pad.
 One `<h1>` per theme that actually emerged from the pool (e.g. "Video & World Models", "Embodied / Robotics", "Multimodal LLMs", "Autonomous Driving"). Each theme section contains, in order:
 
 1. A short **mini-synthesis** (1–3 sentences) on what this theme showed this run.
-2. That theme's **shortlist** as a table (or a compact list if only one or two papers).
+2. The theme's **lightly-noticed papers** (worth a mention, not a deep dive) as a shortlist table — omit the table if the theme has none.
 3. Any **deep dives** for the theme, nested as `<h2>` under the `<h1>`.
 
 Rules:
@@ -100,80 +100,45 @@ Four columns: Paper, Key Contribution, Why It Matters, Links.
 
 Keep "Key Contribution" and "Why It Matters" distinct — contribution is what they did, relevance is why it matters to this user. Do not write the same sentence twice.
 
-For papers that are deep-dived in the same theme below: bold the row title and add `→ see deep dive` in the contribution cell.
+Do not put deep-dived papers in the shortlist table. Each paper appears exactly once: deep-dived papers are their own `<h2>` narrative sections below, lightly-noticed papers are table rows here. If every paper in a theme is deep-dived, omit the table for that theme.
 
 ---
 
-### 3. Deep Dive Subsections (nested under each theme)
+### 3. Deep Dive Sections (nested under each theme)
 
-Each deep-dived paper is an `<h2>` inside its theme's `<h1>` section, separated by `<hr/>`. These are the substantive part of the brief — they must reflect the deeper analysis from `paper-scout-deep-dive`, not a polished restatement of the abstract. It is fine for a deep dive to be long; verbosity that carries technical content is welcome.
+Each deep-dived paper is an `<h2>` inside its theme's `<h1>` section, separated by `<hr/>`. These are the substantive heart of the brief: they must reflect the deeper analysis from `paper-scout-deep-dive` — the reimplementation-level mechanism, the evidence assessment, and what the code and related-work investigation revealed — not a polished restatement of the abstract.
 
-#### Header
+**Write each deep dive as fluent, connective prose, not a filled-in template.** There is no fixed set of sub-headers. Let the structure follow the paper: one with a clean pipeline may warrant an ordered list of stages; one whose interest is a single surprising result may be three tight paragraphs. Sub-headings (`<h3>`) are allowed where a long dive genuinely needs sign-posting, but they must emerge from this paper's shape — never the same five headers stamped onto every paper.
 
-Start with the paper title as the `<h2>`, and put author, year, and links on the immediately following paragraph:
+Whatever the shape, a deep dive must still deliver the substance, woven into the narrative:
+
+- **The core claim**, stated specifically — what the paper actually shows, not the abstract's framing.
+- **The mechanism**, at enough detail that a reader could approximately reimplement it: inputs/outputs, the major stages, the key equations or loss terms, and the non-obvious design choices *and why* they were made.
+- **The evidence**, assessed rather than transcribed: concrete numbers, the magnitude of the gain, where it does not win, and any red flags. Write "outperforms X by Y% on Z", never "achieves state-of-the-art".
+- **What the investigation found**: for papers with code, what reading the implementation revealed (does it match the paper? undocumented tricks? discrepancies? the result of any lightweight check). For papers without code, the comparative positioning against the 1–3 related papers — what is genuinely new versus the closest prior art.
+- **A grounded verdict**: how credible and how novel the work is, and a clear call — read in full / skim / build on / track follow-ups / skip — with the reason.
+
+Header for each dive: the paper title as the `<h2>`, with author, year, and links on the immediately following paragraph.
 
 ```xml
 <h2>Paper Title</h2>
 <p>Author et al. (2025) · <a href="url">HF</a> · <a href="url">PDF</a></p>
 ```
 
-#### What It Does
-
-One or two sentences — the core claim, stated specifically, not the abstract. Prefer the concrete: "The paper shows that…" or "The authors introduce X, which…".
-
-#### How It Works
-
-The key mechanism, at enough detail that a reader could approximately reimplement it — the inputs/outputs, the major stages, the key equations or loss terms, and the non-obvious design choices *and why* they were made. Dense and specific; this is the part that proves you understood the paper rather than skimmed it. If the paper has a clear pipeline, describe it step by step with an ordered list (`<ol><li seq="auto">…</li></ol>`). If it has a notable formula or loss term, write it with inline LaTeX:
+Use the platform where it earns its place, not as decoration: inline `<latex>` for an equation the paper centers on, a two-column `<grid>` to contrast a prior approach with this one, a `<table>` for a genuine multi-way comparison, and callouts for a standout result or a real caveat. A dive that is nothing but flat paragraphs misses the platform; a dive that forces a table and three callouts onto a simple result is noise. Judgment over checklist. Syntax reminders (full rules in `lark-doc-xml.md`):
 
 ```xml
-<p>The training objective is <latex>\mathcal{L} = \mathcal{L}_{\text{CE}} + \lambda \mathcal{L}_{\text{KL}}</latex>.</p>
+<p>The objective is <latex>\mathcal{L} = \mathcal{L}_{\text{CE}} + \lambda \mathcal{L}_{\text{KL}}</latex>.</p>
 ```
-
-For a display equation, give it its own centered paragraph:
-
-```xml
-<p align="center"><latex>\hat{y} = \arg\max_{y} P(y \mid x; \theta)</latex></p>
-```
-
-If the method contrasts two design choices directly, use a two-column grid:
 
 ```xml
 <grid>
-  <column width-ratio="0.5">
-    <p><b>Prior approach</b></p>
-    <p>Description of what prior work did.</p>
-  </column>
-  <column width-ratio="0.5">
-    <p><b>This paper</b></p>
-    <p>Description of what this paper does differently.</p>
-  </column>
+  <column width-ratio="0.5"><p><b>Prior approach</b></p><p>What prior work did.</p></column>
+  <column width-ratio="0.5"><p><b>This paper</b></p><p>What this paper does differently.</p></column>
 </grid>
 ```
 
-Where a diagram would make the architecture, pipeline, or data flow clearer than prose, add a Feishu whiteboard (see `lark-doc`/`lark-whiteboard` for the `<whiteboard>` block). Use it when it genuinely aids understanding, not as decoration.
-
-#### Evidence
-
-What the key results show and how convincing they are. Be direct:
-
-- "Outperforms X by Y% on Z benchmark" is useful.
-- "Achieves state-of-the-art" is not useful.
-
-If there are notable red flags or caveats, use a warning callout:
-
-```xml
-<callout emoji="⚠️" background-color="light-yellow">
-  <p>Baseline comparisons exclude [Method X], the strongest prior approach in this setting.</p>
-</callout>
-```
-
-#### Code & Artifacts
-
-Expected for every deep dive (code inspection is mandatory when a repo exists — see `paper-scout-deep-dive`). Report what reading the implementation revealed: does the code match the paper, any undocumented tricks or default hyperparameters, paper-vs-code discrepancies, and the result of any lightweight check you ran. If no code was available, say so and note how that affects confidence.
-
-#### Judgment
-
-A grounded assessment, as long as it needs to be: how credible the results are, how novel the work is relative to prior art, what (if anything) the code inspection changed about your read, and what the user should do — read in full, build on, track follow-ups, or skip. Be specific; avoid hedging boilerplate.
+For a pipeline, an ordered list reads well: `<ol><li seq="auto">…</li></ol>`. Where a diagram would beat prose for an architecture or data flow, a Feishu whiteboard is available (see `lark-doc` / `lark-whiteboard`).
 
 ---
 
@@ -212,25 +177,22 @@ Use callouts for things that demand attention, not as decoration. Three types ar
 
 ---
 
-## Delivery Commands
+## Delivery
 
-All commands carry `--api-version v2`. Content is DocxXML, passed via `--content` (default `--doc-format xml`). For multi-line content, prefer `--content @path/to/file.xml` or `--content -` (stdin) over inline strings — write the brief to `drafts/` first and pass the file. See `lark-doc-create.md` / `lark-doc-update.md`.
+All `docs` commands carry `--api-version v2`. Content is DocxXML; for multi-line content pass `--content @drafts/brief.xml` or `--content -` (stdin) — write the brief to `drafts/` first.
 
-### Creating The Document
+### Create the doc as the bot
 
 ```bash
 lark-cli docs +create --api-version v2 \
-  --parent-token <token> \
   --content @drafts/brief.xml
 ```
 
-The `<title>` element inside the content sets the document title — there is no `--title` flag. The destination is set with `--parent-token <folder-or-wiki-node-token>` (or `--parent-position my_library` for a personal library). The destination type is recorded in the workspace instruction file. Note that v2 uses `--parent-token` for both folders and wiki nodes — there are no separate `--folder-token` / `--wiki-node` / `--wiki-space` flags.
+The bot owns the resulting doc. There is **no `--parent-token`** and no configured folder/wiki destination — do not add one. The `<title>` element inside the content sets the document title (there is no `--title` flag). Capture `data.document.document_id` and `data.document.url` from the response.
 
-Capture `data.document.document_id` and `data.document.url` from the response.
+### Append sections for long briefs
 
-### Appending Sections For Long Briefs
-
-`lark-doc` recommends creating a skeleton first (title + opening synthesis + the theme `<h1>` headings), then appending each theme's body and deep dives:
+Create a skeleton first (title + opening synthesis + the theme `<h1>` headings), then append each theme's body and deep dives with the `document_id` (not the url):
 
 ```bash
 lark-cli docs +update --api-version v2 \
@@ -239,14 +201,17 @@ lark-cli docs +update --api-version v2 \
   --content @drafts/section.xml
 ```
 
-Use the `document_id` from the create response, not the `url`, especially for wiki destinations.
+### Notify the user
 
-### Typical Sequence
+Load `lark-im` and send the user a direct message containing the doc `url` via `lark-cli im +messages-send`. Resolve the recipient from the identity `lark-cli` exposes; follow `lark-im` for the exact invocation. Delivery is complete only once this DM is confirmed. If no recipient can be resolved or the send fails, stop and report it.
 
-1. Create the doc with the opening synthesis and the theme `<h1>` headings.
-2. For each theme, append its mini-synthesis + shortlist table, then its deep-dive `<h2>` sections.
+### Typical sequence
+
+1. Create the doc as the bot with the opening synthesis and the theme `<h1>` headings; capture `document_id` and `url`.
+2. For each theme, append its mini-synthesis + shortlist table (lightly-noticed papers), then its deep-dive `<h2>` sections.
 3. Append the cross-cutting observations section if present.
-4. Record the document `url` from the create response for the coverage log.
+4. DM the `url` to the user via `lark-im` and confirm delivery.
+5. Archive the delivered DocxXML to `../reports/<YYYY-MM-DD>-<slug>.docxxml` and record the `url` in `runs/INDEX.md`.
 
 ---
 
@@ -258,7 +223,9 @@ Use the `document_id` from the create response, not the `url`, especially for wi
 - Do not use a Markdown `>` blockquote expecting a callout. Use the `<callout>` tag.
 - Do not use `overwrite` to fix a brief mid-run. Use `append`, or the block-level edit commands documented in `lark-doc-update.md`.
 - Do not write "the paper achieves state-of-the-art." Write the number, the benchmark, and the comparison.
-- Do not use a flat bullet list for the entire brief. Themes are `<h1>` sections, each shortlist is a `<table>`, deep dives are `<h2>` sections, and judgment is prose.
+- Do not use a flat bullet list for the entire brief. Themes are `<h1>` sections, shortlists are `<table>`s, deep dives are `<h2>` narrative sections.
+- Do not stamp every deep dive with the same fixed sub-headers (What It Does / How It Works / Evidence / Code / Judgment). Write narrative whose shape follows the paper.
+- Do not list a deep-dived paper in a shortlist table or add "→ see deep dive" pointers. Each paper appears exactly once — deep dives are `<h2>` sections; shortlist tables hold only lightly-noticed papers.
 - Do not present one giant shortlist table for the whole pool. Split the shortlist by theme, one table per theme.
 - Do not hardcode the theme list. Derive it from the pool each run; fall back to a single "Highlights" section if the pool does not cluster.
 - Do not ship a deep dive that just restates the abstract and method. It must reflect the reimplementation-level mechanism, the evidence assessment, and what the code revealed.
@@ -273,12 +240,13 @@ Use the `document_id` from the create response, not the `url`, especially for wi
 - [ ] Content authored as DocxXML; all commands use `--api-version v2`
 - [ ] `<title>` element present and matches the configured title pattern; not duplicated in the body
 - [ ] Opening synthesis written — 2–4 sentences on what mattered this period, naming the themes
-- [ ] Body organized into per-theme `<h1>` sections (or a single "Highlights" fallback); each paper in exactly one theme
-- [ ] Each theme has a mini-synthesis and its own shortlist `<table>` with specific contribution and relevance columns
-- [ ] Each deep dive (nested `<h2>`): reimplementation-level mechanism, evidence assessment, code/artifact findings, and a grounded judgment
+- [ ] Body organized into per-theme `<h1>` sections (or a single "Highlights" fallback); each paper in exactly one theme and appearing exactly once (deep dives as `<h2>` narrative, lightly-noticed papers as shortlist rows; no "see deep dive" pointers)
+- [ ] Each theme has a mini-synthesis; lightly-noticed papers go in a per-theme shortlist `<table>` with specific contribution and relevance columns (omitted if none)
+- [ ] Each deep dive is fluent narrative (no fixed five-header template) carrying mechanism at reimplementation detail, assessed evidence with concrete numbers, code/related-work findings, and a grounded verdict
 - [ ] Callouts used for standout papers and notable caveats — not decoratively
 - [ ] `<latex>` used for any equations the paper centers on
 - [ ] `<grid>` / `<whiteboard>` used where a comparison or diagram genuinely aids understanding
 - [ ] `<`, `>`, `&` in text content escaped per `lark-doc-xml.md`
-- [ ] Doc created via `docs +create --api-version v2`; long briefs appended via `docs +update --api-version v2 --command append`
+- [ ] Doc created as the bot via `docs +create --api-version v2` (no `--parent-token`); long briefs appended via `docs +update --api-version v2 --command append`
+- [ ] Doc link DM'd to the user via `lark-im` and delivery confirmed
 - [ ] Document `url` recorded for the coverage log

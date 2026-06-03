@@ -1,18 +1,15 @@
 # Run Index
 
-Coverage log and dedup source of truth across runs. Newest entries first.
-
-Before serious scouting or investigation, read this file to avoid re-covering papers already deep-dived. After successful delivery, each run appends one entry.
+Compact coverage log and dedup source of truth, newest first. Before serious scouting, read this to avoid re-deep-diving papers already covered. After each delivered run, append one block. Per-paper analysis lives in `runs/<area>/<title-slug>-<id>-deep-dive.md`, not here.
 
 Entry format:
 
+```
 ## YYYY-MM-DD — <period covered>
-
-- **Feishu doc:** <url>
-- **Deep-dived:** <paper-id> (<title>) — <one-line rationale>
-- **Shortlisted:** <paper-id>, <paper-id>, ...
-
-The verbose per-paper analysis lives alongside this file as `runs/<paper-id>-deep-dive.md`.
+- Doc: <url>
+- Deep-dived: <id>, <id>
+- Shortlisted: <id>, <id>, ...
+```
 
 ---
 

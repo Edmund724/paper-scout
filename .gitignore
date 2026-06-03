@@ -5,6 +5,8 @@ workspace/repos/*
 !workspace/repos/README.md
 workspace/drafts/*
 !workspace/drafts/README.md
+workspace/assets/*
+!workspace/assets/README.md
 
 # Local-only, never tracked
 workspace/.agents/settings.local.json
