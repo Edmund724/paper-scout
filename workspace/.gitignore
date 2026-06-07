@@ -1,3 +1,6 @@
+# Ignore all files by default
+*
+
 # Durable paper cache
 !papers/
 !papers/**
@@ -18,21 +21,6 @@ assets/*
 repos/*
 !repos/
 !repos/README.md
-.venv/
-.venv-*/
-venv*/
-.cache/
-
-# Local inspection scratch
-hf_inspect/
-/*.py
-/*.ipynb
-/*.json
-/*.txt
-/*.xml
-/*.log
-/*.out
-/*.csv
 
 # Local-only agent settings
 .agents/settings.local.json
